@@ -1,0 +1,47 @@
+/* Custom CSS variables for colors */
+:root {
+  /* Core brand + background */
+  --primary: #5865f2;
+  --accent: #5865f2;
+  --accent-soft: rgba(88, 101, 242, 0.35);
+
+  --background: #111318;       /* Page bg (matches splash body) */
+  --background-card: #18191c;  /* Card / panel bg */
+  --border-subtle: #202225;
+
+  /* Text */
+  --text-primary: #ffffff;
+  --text-secondary: #b9bbbe;   /* Muted gray from splash */
+
+  /* Status colors (slightly tuned to fit the darker theme) */
+  --success: #43e97b;
+  --warning: #fbbf24;
+  --error: #f04747;
+}
+
+/* Custom scrollbar styling */
+.custom-scrollbar {
+  /* Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent-soft) var(--background-card);
+}
+
+/* Webkit browsers (Chrome, Safari, Edge) */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: var(--background-card);
+  border-radius: 999px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #7983ff, var(--primary));
+  border-radius: 999px;
+  border: 2px solid var(--background-card);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #a5afff, #7983ff);
+}
