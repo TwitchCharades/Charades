@@ -6,6 +6,15 @@ contextBridge.exposeInMainWorld("electronAPI", {
     windowActions(action: "minimize" | "maximize" | "close") {
         ipcRenderer.send(IPC_EVENTS.WINDOW_ACTION, action);
     },
+    updateCheck() {
+        return ipcRenderer.invoke(IPC_EVENTS.UPDATE_CHECK);
+    },
+    updateDownload() {
+        return ipcRenderer.invoke(IPC_EVENTS.UPDATE_DOWNLOAD);
+    },
+    updateInstallNow() {
+        return ipcRenderer.invoke(IPC_EVENTS.UPDATE_INSTALL_NOW);
+    },
 });
 
 contextBridge.exposeInMainWorld("ipcRenderer", {

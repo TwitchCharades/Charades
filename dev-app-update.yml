@@ -1,0 +1,4 @@
+owner: ILostMyMedic
+repo: TwitchCharades
+provider: github
+token: ${GH_TOKEN}

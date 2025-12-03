@@ -1,4 +1,5 @@
 import { app, BrowserWindow, ipcMain } from "electron";
+import { autoUpdater } from "electron-updater";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { env } from "../config/env";
@@ -27,6 +28,7 @@ class MainApplication {
     constructor() {
         this.logger.info("Initializing Electron application");
         this.initialize();
+        this.setupAutoUpdater();
     }
 
     private initialize(): void {
@@ -192,6 +194,22 @@ class MainApplication {
                 }
             }
         );
+
+        // Update IPC handlers
+        ipcMain.handle(IPC_EVENTS.UPDATE_CHECK, async () => {
+            this.logger.info("Manual update check requested");
+            return autoUpdater.checkForUpdates();
+        });
+
+        ipcMain.handle(IPC_EVENTS.UPDATE_DOWNLOAD, async () => {
+            this.logger.info("Update download requested");
+            return autoUpdater.downloadUpdate();
+        });
+
+        ipcMain.handle(IPC_EVENTS.UPDATE_INSTALL_NOW, () => {
+            this.logger.info("Update install requested, quitting and installing");
+            autoUpdater.quitAndInstall();
+        });
     }
 
     private setupAppListeners(): void {
@@ -203,6 +221,55 @@ class MainApplication {
                 this.createMainWindow();
             }
         });
+    }
+
+    private setupAutoUpdater(): void {
+        this.logger.info("Setting up auto-updater");
+
+        // Don't download automatically, let user trigger it
+        autoUpdater.autoDownload = false;
+        autoUpdater.autoInstallOnAppQuit = true;
+
+        // Force dev updates for testing (remove in production)
+        if (env.VITE_DEV_SERVER_URL) {
+            this.logger.info("Dev mode: Forcing update checks for testing");
+            autoUpdater.forceDevUpdateConfig = true;
+        }
+
+        autoUpdater.on("update-available", info => {
+            this.logger.info({ version: info.version }, "Update available");
+            this.mainWindow?.webContents.send(IPC_EVENTS.UPDATE_AVAILABLE, info);
+        });
+
+        autoUpdater.on("update-not-available", () => {
+            this.logger.info("Update not available");
+            this.mainWindow?.webContents.send(IPC_EVENTS.UPDATE_NOT_AVAILABLE);
+        });
+
+        autoUpdater.on("error", err => {
+            this.logger.error({ error: err }, "Update error");
+            this.mainWindow?.webContents.send(IPC_EVENTS.UPDATE_ERROR, err.message);
+        });
+
+        autoUpdater.on("download-progress", progress => {
+            this.logger.debug({ percent: progress.percent }, "Download progress");
+            this.mainWindow?.webContents.send(IPC_EVENTS.UPDATE_DOWNLOAD_PROGRESS, progress);
+        });
+
+        autoUpdater.on("update-downloaded", info => {
+            this.logger.info({ version: info.version }, "Update downloaded");
+            this.mainWindow?.webContents.send(IPC_EVENTS.UPDATE_DOWNLOADED, info);
+        });
+
+        // Optional: Check for updates on startup (after main window is created)
+        setTimeout(() => {
+            if (this.mainWindow) {
+                this.logger.info("Running initial update check");
+                autoUpdater.checkForUpdates().catch(err => {
+                    this.logger.warn({ error: err }, "Initial update check failed");
+                });
+            }
+        }, 3000); // Wait 3 seconds after app starts
     }
 }
 
