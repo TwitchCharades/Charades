@@ -1,6 +1,13 @@
 import { ipcRenderer, contextBridge } from "electron";
+import { IPC_EVENTS } from "../constants/ipc-events";
 
 // --------- Expose some API to the Renderer process ---------
+contextBridge.exposeInMainWorld("electronAPI", {
+    windowActions(action: "minimize" | "maximize" | "close") {
+        ipcRenderer.send(IPC_EVENTS.WINDOW_ACTION, action);
+    },
+});
+
 contextBridge.exposeInMainWorld("ipcRenderer", {
     on(...args: Parameters<typeof ipcRenderer.on>) {
         const [channel, listener] = args;

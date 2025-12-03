@@ -8,6 +8,12 @@ importers:
 
   .:
     dependencies:
+      '@lineiconshq/free-icons':
+        specifier: ^1.0.3
+        version: 1.0.3
+      '@lineiconshq/react-lineicons':
+        specifier: ^1.0.5
+        version: 1.0.5(react@18.3.1)
       dotenv:
         specifier: ^17.2.3
         version: 17.2.3
@@ -413,6 +419,19 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
+
+  '@lineiconshq/free-icons@0.0.1':
+    resolution: {integrity: sha512-fnWSSjIv/4vojAKsBZXluhMRr1LIb5p85IzXK0Dh27KF9qXxz89HZJrnvXH71ZqMCP+NFzo/xh0dJsv8PT+3xg==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+
+  '@lineiconshq/free-icons@1.0.3':
+    resolution: {integrity: sha512-VFilyDa9JBFRRwsMYeeigHREzzo8ZuoV5jyn6PC4UpMreUD/XckX212ypnnw9WtBXVIGrtm7mdHuJ9RIKluA5Q==}
+
+  '@lineiconshq/react-lineicons@1.0.5':
+    resolution: {integrity: sha512-GfUBSMLoL7siDOmVwDTTGwGCREu7Q/g7PAzqoMII+SF6ZWQS3ZfTLupNcQkTx4R6+mTibz5OIoWHCseVF8WsMQ==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
   '@malept/cross-spawn-promise@1.1.1':
     resolution: {integrity: sha512-RTBGWL5FWQcg9orDOCcp4LvItNzUPcyEU9bwaeJX0rJ1IQxzucC48Y0/sQLp/g6t99IQgAlGIaesJS+gTn7tVQ==}
@@ -1773,6 +1792,9 @@ packages:
     resolution: {integrity: sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==}
     engines: {node: '>= 0.4'}
 
+  meilisearch@0.53.0:
+    resolution: {integrity: sha512-nG4VXbEOSzUmtbfsgOo+t6yX1ECEgXaT4hC0ap9MBpQGK5xwT+NWYDENYsKWR75cVaWaAqva+ok4zHlgtdXlLw==}
+
   micromatch@4.0.8:
     resolution: {integrity: sha512-PXwfBhYu0hBCPw8Dn0E+WDYb7af3dSLVWKi3HGv84IdF4TyFoC0ysxFd0Goxw7nSv4T/PzEJQxsYsEiFCKo2BA==}
     engines: {node: '>=8.6'}
@@ -2833,6 +2855,19 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
+
+  '@lineiconshq/free-icons@0.0.1(react@18.3.1)':
+    dependencies:
+      react: 18.3.1
+
+  '@lineiconshq/free-icons@1.0.3':
+    dependencies:
+      meilisearch: 0.53.0
+
+  '@lineiconshq/react-lineicons@1.0.5(react@18.3.1)':
+    dependencies:
+      '@lineiconshq/free-icons': 0.0.1(react@18.3.1)
+      react: 18.3.1
 
   '@malept/cross-spawn-promise@1.1.1':
     dependencies:
@@ -4277,6 +4312,8 @@ snapshots:
     optional: true
 
   math-intrinsics@1.1.0: {}
+
+  meilisearch@0.53.0: {}
 
   micromatch@4.0.8:
     dependencies:
