@@ -6,6 +6,7 @@ import { env } from "../config/env";
 import { IPC_EVENTS } from "../constants/ipc-events";
 import { APP_EVENTS } from "../constants/app-events";
 import { createChildLogger } from "../utils/logger";
+import { checkMicroserviceHealth } from "../utils/healthCheck";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -40,10 +41,20 @@ class MainApplication {
 
         app.on(APP_EVENTS.WINDOWS_ALL_CLOSED, () => {
             this.logger.info("All windows closed");
-            if (process.platform !== "darwin") {
-                this.logger.info("Quitting application");
-                app.quit();
-            }
+            // Quit on all platforms
+            this.logger.info("Quitting application");
+            app.quit();
+        });
+
+        app.on(APP_EVENTS.BEFORE_QUIT, () => {
+            this.logger.info("App is about to quit");
+            // Clean up resources
+            this.mainWindow = null;
+            this.splashWindow = null;
+        });
+
+        app.on(APP_EVENTS.WILL_QUIT, () => {
+            this.logger.info("App will quit");
         });
     }
 
@@ -117,7 +128,7 @@ class MainApplication {
     private async checkMicroserviceAvailability(): Promise<void> {
         // Placeholder for microservice availability check
         const maxRetries = 10;
-        const retryDelay = 1000;
+        const retryDelay = 2000;
         let attempts = 0;
 
         this.logger.info({ maxRetries, retryDelay }, "Starting microservice health check");
@@ -134,15 +145,14 @@ class MainApplication {
             });
 
             try {
-                const response = await fetch("https://api.sampleapis.com/wines/reds");
+                const result = await checkMicroserviceHealth();
 
-                if (response.ok) {
-                    const data = await response.json();
+                if (result.ok) {
                     this.logger.info({ attempts }, "Microservice health check passed");
                     this.splashWindow?.webContents.send(IPC_EVENTS.HEALTH_STATUS, {
                         status: "online",
                         message: "Microservice connected",
-                        data,
+                        data: result.data,
                     });
                     this.healthCheckPassed = true;
 
@@ -157,6 +167,9 @@ class MainApplication {
                     // Health check passed, now create the main window
                     await this.createMainWindow();
                     return;
+                } else {
+                    // Health check failed but didn't throw
+                    throw new Error(result.error || "Health check returned not ok");
                 }
             } catch (error) {
                 this.logger.warn({ error, attempts, maxRetries }, "Health check failed");
@@ -167,6 +180,21 @@ class MainApplication {
             }
         }
         this.logger.error({ maxRetries }, "Health check failed after all retries");
+
+        // Send offline status to splash window
+        this.splashWindow?.webContents.send(IPC_EVENTS.HEALTH_STATUS, {
+            status: "offline",
+            message: "Unable to connect to microservice",
+            error: true,
+        });
+
+        // Wait to show the error message, then quit
+        await new Promise(resolve => setTimeout(resolve, 3000));
+
+        this.logger.error("Exiting application due to failed health check");
+        this.splashWindow?.close();
+        this.splashWindow = null;
+        app.quit();
     }
 
     private setupIpcHandlers(): void {

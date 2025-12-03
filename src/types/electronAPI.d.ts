@@ -7,6 +7,27 @@ declare global {
             updateCheck: () => Promise<any>;
             updateDownload: () => Promise<any>;
             updateInstallNow: () => void;
+            onHealthStatus: (
+                callback: (data: {
+                    status: string;
+                    message: string;
+                    attempts?: number;
+                    maxRetries?: number;
+                    error?: boolean;
+                    data?: any;
+                }) => void
+            ) => void;
+            auth: {
+                init: () => Promise<{ success: boolean; error?: string }>;
+                get: () => Promise<{
+                    authenticated: boolean;
+                    user?: any;
+                    expired?: boolean;
+                    error?: string;
+                }>;
+                check: () => Promise<{ authenticated: boolean }>;
+                logout: () => Promise<{ success: boolean; error?: string }>;
+            };
         };
         ipcRenderer: {
             on: IpcRenderer["on"];

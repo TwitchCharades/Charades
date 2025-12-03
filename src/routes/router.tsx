@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router";
+import { createBrowserRouter, redirect } from "react-router";
 import { PATHS } from "./paths";
 
 // Layouts
@@ -10,10 +10,40 @@ import { AuthPage } from "../pages/auth";
 import { ProfilePage } from "../pages/profile";
 import { SettingsPage } from "../pages/settings";
 
+const isAuthenticated = async (): Promise<boolean> => {
+    if (window.electronAPI?.auth) {
+        try {
+            const result = await window.electronAPI.auth.check();
+            return result.authenticated;
+        } catch (error) {
+            console.error("Failed to check auth status:", error);
+            return false;
+        }
+    }
+    return false;
+};
+
+const authLoader = async () => {
+    const authenticated = await isAuthenticated();
+    if (!authenticated) {
+        return redirect(PATHS.auth);
+    }
+    return null;
+};
+
+const publicLoader = async () => {
+    const authenticated = await isAuthenticated();
+    if (authenticated) {
+        return redirect(PATHS.home);
+    }
+    return null;
+};
+
 export const router = createBrowserRouter([
     {
         path: PATHS.home,
         element: <DefaultLayout />,
+        loader: authLoader,
         children: [
             {
                 index: true,
@@ -32,6 +62,7 @@ export const router = createBrowserRouter([
     },
     {
         element: <AuthLayout />,
+        loader: publicLoader,
         children: [
             {
                 index: true,

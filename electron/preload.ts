@@ -6,6 +6,17 @@ contextBridge.exposeInMainWorld("electronAPI", {
     windowActions(action: "minimize" | "maximize" | "close") {
         ipcRenderer.send(IPC_EVENTS.WINDOW_ACTION, action);
     },
+    onHealthStatus: (
+        callback: (data: {
+            status: string;
+            message: string;
+            attempts?: number;
+            maxRetries?: number;
+            error?: boolean;
+        }) => void
+    ) => {
+        ipcRenderer.on(IPC_EVENTS.HEALTH_STATUS, (_event, data) => callback(data));
+    },
     updateCheck() {
         return ipcRenderer.invoke(IPC_EVENTS.UPDATE_CHECK);
     },
@@ -14,6 +25,20 @@ contextBridge.exposeInMainWorld("electronAPI", {
     },
     updateInstallNow() {
         return ipcRenderer.invoke(IPC_EVENTS.UPDATE_INSTALL_NOW);
+    },
+    auth: {
+        init: (): Promise<{ success: boolean; error?: string }> =>
+            ipcRenderer.invoke(IPC_EVENTS.TWITCH_AUTH_INIT),
+        get: (): Promise<{
+            authenticated: boolean;
+            user?: any;
+            expired?: boolean;
+            error?: string;
+        }> => ipcRenderer.invoke(IPC_EVENTS.TWITCH_AUTH_GET),
+        check: (): Promise<{ authenticated: boolean }> =>
+            ipcRenderer.invoke(IPC_EVENTS.TWITCH_AUTH_CHECK),
+        logout: (): Promise<{ success: boolean; error?: string }> =>
+            ipcRenderer.invoke(IPC_EVENTS.TWITCH_AUTH_LOGOUT),
     },
 });
 

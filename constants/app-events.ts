@@ -3,6 +3,8 @@ export const APP_EVENTS = {
     // Application Lifecycle
     WINDOWS_ALL_CLOSED: "window-all-closed",
     ACTIVATE: "activate",
+    BEFORE_QUIT: "before-quit",
+    WILL_QUIT: "will-quit",
 
     // Electron webContents Events
     CRASHED: "web-contents-crashed",
