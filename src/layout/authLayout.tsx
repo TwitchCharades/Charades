@@ -6,6 +6,6 @@ const AuthLayout = () => {
             <Outlet />
         </div>
     );
-}
+};
 
 export default AuthLayout;

@@ -1,16 +1,14 @@
-import { createBrowserRouter } from 'react-router';
-import { PATHS } from './paths';
+import { createBrowserRouter } from "react-router";
+import { PATHS } from "./paths";
 
 // Layouts
-import { DefaultLayout, AuthLayout } from '../layout';
+import { DefaultLayout, AuthLayout } from "../layout";
 
 // Pages
-import { HomePage } from '../pages/home';
-import { AuthPage } from '../pages/auth';
-import { ProfilePage } from '../pages/profile';
-import { SettingsPage } from '../pages/settings';
-
-
+import { HomePage } from "../pages/home";
+import { AuthPage } from "../pages/auth";
+import { ProfilePage } from "../pages/profile";
+import { SettingsPage } from "../pages/settings";
 
 export const router = createBrowserRouter([
     {

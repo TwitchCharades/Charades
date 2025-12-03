@@ -6,6 +6,6 @@ const DefaultLayout = () => {
             <Outlet />
         </div>
     );
-}
+};
 
 export default DefaultLayout;

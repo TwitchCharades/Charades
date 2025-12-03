@@ -6,13 +6,13 @@ export const logger = pino({
     formatters: {
         level: label => {
             return { level: label };
-        }
+        },
     },
     base: {
-        env: env.NODE_ENV
-    }
+        env: env.NODE_ENV,
+    },
 });
 
-export function createChildLogger(context: Record<string, any>) {
+export function createChildLogger(context: Record<string, unknown>) {
     return logger.child(context);
 }

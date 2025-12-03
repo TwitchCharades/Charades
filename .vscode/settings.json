@@ -1,0 +1,45 @@
+{
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "explorer.compactFolders": false,
+    "explorer.autoReveal": false,
+    "explorer.fileNesting.enabled": true,
+    "explorer.fileNesting.expand": false,
+    "explorer.fileNesting.patterns": {
+        "*.ts": "${capture}.js, ${capture}.d.ts, ${capture}.test.ts, ${capture}.spec.ts",
+        "*.tsx": "${capture}.test.tsx, ${capture}.spec.tsx",
+        "*.js": "${capture}.js.map, ${capture}.min.js, ${capture}.d.ts",
+        "*.jsx": "${capture}.js",
+        "package.json": "package-lock.json, pnpm-lock.yaml, pnpm-workspace.yaml, yarn.lock, .npmrc, .yarnrc",
+        "tsconfig.json": "tsconfig.*.json",
+        "vite.config.*": "vite.config.*",
+        ".eslintrc.*": ".eslintignore, eslint.config.js",
+        ".prettierrc": ".prettierignore",
+        "README.md": "LICENSE, CHANGELOG.md, CONTRIBUTING.md",
+        ".env": ".env.*"
+    },
+    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[typescriptreact]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[javascript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[javascriptreact]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[json]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[html]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[css]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[scss]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    }
+}
