@@ -9,24 +9,25 @@
         "lint": "eslint .",
         "format": "prettier --write .",
         "format:check": "prettier --check .",
-        "preview": "vite preview"
+        "preview": "vite preview",
+        "postinstall": "electron-builder install-app-deps"
     },
     "dependencies": {
         "@lineiconshq/free-icons": "^1.0.3",
         "@lineiconshq/react-lineicons": "^1.0.5",
+        "better-sqlite3": "^12.5.0",
         "dotenv": "^17.2.3",
         "electron-updater": "^6.6.2",
         "pino": "^10.1.0",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
         "react-router": "^7.9.6",
-        "sqlite": "^5.1.1",
-        "sqlite3": "^5.1.7",
         "tailwindcss": "^4.1.17",
         "zod": "^4.1.13"
     },
     "devDependencies": {
         "@tailwindcss/vite": "^4.1.17",
+        "@types/better-sqlite3": "^7.6.13",
         "@types/react": "^18.2.64",
         "@types/react-dom": "^18.2.21",
         "@typescript-eslint/eslint-plugin": "^8.48.0",

@@ -21,6 +21,7 @@ export const IPC_EVENTS = {
     TWITCH_AUTH_LOGOUT: "twitch:auth:logout",
     TWITCH_AUTH_CHECK: "twitch:auth:check",
     TWITCH_AUTH_CALLBACK: "twitch:auth:callback",
+    TWITCH_AUTH_SUCCESS: "twitch:auth:success",
 
     // Database
     DB_SAVE_SETTINGS: "db:save-settings",

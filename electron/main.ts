@@ -6,7 +6,10 @@ import { env } from "../config/env";
 import { IPC_EVENTS } from "../constants/ipc-events";
 import { APP_EVENTS } from "../constants/app-events";
 import { createChildLogger } from "../utils/logger";
-import { checkMicroserviceHealth } from "../utils/healthCheck";
+import { checkMicroserviceHealth } from "../api/healthCheck";
+import { DatabaseService } from "../services/database";
+import { DatabaseHandler } from "../handlers/database-handler";
+import { AuthHandler } from "../handlers/auth-handler";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -25,16 +28,34 @@ class MainApplication {
     private splashWindow: BrowserWindow | null = null;
     private healthCheckPassed: boolean = false;
     private logger = createChildLogger({ context: "MainApplication" });
+    private db: DatabaseService;
+    private authHandler: AuthHandler;
+    private databaseHandler: DatabaseHandler;
 
     constructor() {
         this.logger.info("Initializing Electron application");
+        this.db = new DatabaseService(path.join(app.getPath("userData"), "database.sqlite"));
+        this.authHandler = new AuthHandler(this.db);
+        this.databaseHandler = new DatabaseHandler(this.db);
         this.initialize();
         this.setupAutoUpdater();
     }
 
-    private initialize(): void {
-        app.whenReady().then(() => {
+    private async initialize(): Promise<void> {
+        app.whenReady().then(async () => {
             this.logger.info("App is ready");
+            
+            // Initialize database before creating windows
+            try {
+                this.logger.info("Initializing database");
+                await this.db.initialize();
+                this.logger.info("Database initialized successfully");
+            } catch (error) {
+                this.logger.error({ error }, "Failed to initialize database");
+                app.quit();
+                return;
+            }
+            
             this.createSplashWindow();
             this.setupAppListeners();
         });

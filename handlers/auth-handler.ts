@@ -1,6 +1,10 @@
 import { ipcMain, BrowserWindow } from "electron";
+import { fileURLToPath } from "node:url";
+import path from "node:path";
 import { IPC_EVENTS } from "../constants/ipc-events";
 import { DatabaseService } from "../services/database";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export class AuthHandler {
     private db: DatabaseService;
@@ -18,22 +22,11 @@ export class AuthHandler {
                     // Handle error
                     console.error("Authentication error:", authData.error);
                     this.closeAuthWindow();
-
-                    // Navigate main window to auth page with error
-                    const mainWindow = BrowserWindow.getAllWindows().find(
-                        w => !w.isDestroyed() && w !== this.authWindow
-                    );
-                    if (mainWindow) {
-                        mainWindow.loadURL(
-                            "http://localhost:5173/auth?error=" + encodeURIComponent(authData.error)
-                        );
-                    }
-
                     return { success: false };
                 }
 
                 // Save auth data
-                const userId = await this.db.upsertUser({
+                const twitchId = await this.db.upsertUser({
                     twitchId: authData.user_id,
                     displayName: authData.display_name,
                     username: authData.username,
@@ -52,15 +45,18 @@ export class AuthHandler {
                     this.closeAuthWindow();
                 }, 1500);
 
-                // Navigate main window to home
+                // Send success event to main window to navigate using React Router
                 const mainWindow = BrowserWindow.getAllWindows().find(
                     w => !w.isDestroyed() && w !== this.authWindow
                 );
                 if (mainWindow) {
-                    mainWindow.loadURL("http://localhost:5173/");
+                    mainWindow.webContents.send(IPC_EVENTS.TWITCH_AUTH_SUCCESS, {
+                        displayName: authData.display_name,
+                        profilePicture: authData.profile_image_url,
+                    });
                 }
 
-                return { success: true, userId };
+                return { success: true, twitchId };
             } catch (error) {
                 console.error("Failed to process auth callback:", error);
                 this.closeAuthWindow();
@@ -86,7 +82,7 @@ export class AuthHandler {
                         nodeIntegration: false,
                         contextIsolation: true,
                         sandbox: false,
-                        preload: require("path").join(__dirname, "../preload.js"),
+                        preload: path.join(__dirname, "preload.cjs"),
                     },
                 });
 
@@ -121,19 +117,9 @@ export class AuthHandler {
                                 if (authData.error) {
                                     console.error("Authentication error:", authData.error);
                                     this.closeAuthWindow();
-
-                                    const mainWindow = BrowserWindow.getAllWindows().find(
-                                        w => !w.isDestroyed() && w !== this.authWindow
-                                    );
-                                    if (mainWindow) {
-                                        mainWindow.loadURL(
-                                            "http://localhost:5173/auth?error=" +
-                                                encodeURIComponent(authData.error)
-                                        );
-                                    }
                                 } else {
                                     // Save auth data
-                                    const userId = await this.db.upsertUser({
+                                    await this.db.upsertUser({
                                         twitchId: authData.user_id,
                                         displayName: authData.display_name,
                                         username: authData.username,
@@ -155,12 +141,18 @@ export class AuthHandler {
                                         this.closeAuthWindow();
                                     }, 1500);
 
-                                    // Navigate main window to home
+                                    // Send success event to main window to navigate using React Router
                                     const mainWindow = BrowserWindow.getAllWindows().find(
                                         w => !w.isDestroyed() && w !== this.authWindow
                                     );
                                     if (mainWindow) {
-                                        mainWindow.loadURL("http://localhost:5173/");
+                                        mainWindow.webContents.send(
+                                            IPC_EVENTS.TWITCH_AUTH_SUCCESS,
+                                            {
+                                                displayName: authData.display_name,
+                                                profilePicture: authData.profile_image_url,
+                                            }
+                                        );
                                     }
                                 }
                             }
@@ -202,7 +194,7 @@ export class AuthHandler {
                 }
             ) => {
                 try {
-                    const userId = await this.db.upsertUser({
+                    const twitchId = await this.db.upsertUser({
                         twitchId: authData.user_id,
                         displayName: authData.display_name,
                         username: authData.username,
@@ -215,7 +207,7 @@ export class AuthHandler {
                     });
 
                     console.log("User authenticated and saved:", authData.display_name);
-                    return { success: true, userId };
+                    return { success: true, twitchId };
                 } catch (error) {
                     console.error("Failed to save auth data:", error);
                     return {
@@ -227,58 +219,22 @@ export class AuthHandler {
         );
 
         // Get current authentication status
-        ipcMain.handle(IPC_EVENTS.TWITCH_AUTH_GET, async () => {
+        ipcMain.handle(IPC_EVENTS.TWITCH_AUTH_GET, async (_event, twitchId: string) => {
             try {
-                const user = await this.db.getFirstUser();
-
-                if (!user) {
-                    return { authenticated: false };
-                }
-
-                // Check if token is expired (if we have expiresIn data)
-                if (user.expiresIn && user.tokenObtainedAt) {
-                    const obtainedAt = new Date(user.tokenObtainedAt).getTime();
-                    const expiresAt = obtainedAt + user.expiresIn * 1000;
-                    const now = Date.now();
-
-                    if (now >= expiresAt) {
-                        // Token expired - could implement refresh logic here
-                        console.log("Token expired for user:", user.displayName);
-                        return {
-                            authenticated: false,
-                            expired: true,
-                            user: {
-                                displayName: user.displayName,
-                                username: user.username,
-                            },
-                        };
-                    }
-                }
-
-                return {
-                    authenticated: true,
-                    user: {
-                        id: user.id,
-                        twitchId: user.twitchId,
-                        displayName: user.displayName,
-                        username: user.username,
-                        email: user.email,
-                        profilePicture: user.profilePicture,
-                    },
-                };
+                const user = await this.db.getUserByTwitchId(twitchId);
+                return { success: true, user };
             } catch (error) {
-                console.error("Failed to get auth data:", error);
                 return {
-                    authenticated: false,
-                    error: error instanceof Error ? error.message : "Failed to get auth data",
+                    success: false,
+                    error: error instanceof Error ? error.message : "Failed to get user",
                 };
             }
         });
 
         // Check if user is authenticated (lighter version)
-        ipcMain.handle(IPC_EVENTS.TWITCH_AUTH_CHECK, async () => {
+        ipcMain.handle(IPC_EVENTS.TWITCH_AUTH_CHECK, async (_event, twitchId: string) => {
             try {
-                const user = await this.db.getFirstUser();
+                const user = await this.db.getUserByTwitchId(twitchId);
                 return { authenticated: !!user };
             } catch (error) {
                 return { authenticated: false };
@@ -286,15 +242,29 @@ export class AuthHandler {
         });
 
         // Logout
-        ipcMain.handle(IPC_EVENTS.TWITCH_AUTH_LOGOUT, async () => {
+        ipcMain.handle(IPC_EVENTS.TWITCH_AUTH_LOGOUT, async (_event, twitchId: string) => {
             try {
-                // Get user before deleting
-                const user = await this.db.getFirstUser();
-
-                if (user) {
-                    await this.db.deleteUser(user.id!);
-                    console.log("User logged out:", user.displayName);
+                // Get existing user data first
+                const existingUser = await this.db.getUserByTwitchId(twitchId);
+                if (!existingUser) {
+                    return {
+                        success: false,
+                        error: "User not found",
+                    };
                 }
+
+                // Update user with cleared tokens but keep other data
+                await this.db.upsertUser({
+                    twitchId: existingUser.twitchId,
+                    displayName: existingUser.displayName,
+                    username: existingUser.username,
+                    email: existingUser.email,
+                    profilePicture: existingUser.profilePicture,
+                    accessToken: "",
+                    refreshToken: "",
+                    expiresIn: existingUser.expiresIn,
+                    authData: existingUser.authData,
+                });
 
                 return { success: true };
             } catch (error) {

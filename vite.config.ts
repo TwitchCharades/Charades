@@ -11,8 +11,14 @@ export default defineConfig({
         tailwindcss(),
         electron({
             main: {
-                // Shortcut of `build.lib.entry`.
                 entry: "electron/main.ts",
+                vite: {
+                    build: {
+                        rollupOptions: {
+                            external: ["sqlite3", "better-sqlite3"],
+                        },
+                    },
+                },
             },
             preload: {
                 // Shortcut of `build.rollupOptions.input`.
