@@ -45,15 +45,15 @@ export class AuthHandler {
                     this.closeAuthWindow();
                 }, 1500);
 
-                // Send success event to main window to navigate using React Router
+                // Navigate main window to home page
                 const mainWindow = BrowserWindow.getAllWindows().find(
                     w => !w.isDestroyed() && w !== this.authWindow
                 );
                 if (mainWindow) {
-                    mainWindow.webContents.send(IPC_EVENTS.TWITCH_AUTH_SUCCESS, {
-                        displayName: authData.display_name,
-                        profilePicture: authData.profile_image_url,
-                    });
+                    // Execute JavaScript in the renderer to navigate to home
+                    mainWindow.webContents.executeJavaScript(`
+                        window.location.href = '/';
+                    `);
                 }
 
                 return { success: true, twitchId };
@@ -141,18 +141,15 @@ export class AuthHandler {
                                         this.closeAuthWindow();
                                     }, 1500);
 
-                                    // Send success event to main window to navigate using React Router
+                                    // Navigate main window to home page
                                     const mainWindow = BrowserWindow.getAllWindows().find(
                                         w => !w.isDestroyed() && w !== this.authWindow
                                     );
                                     if (mainWindow) {
-                                        mainWindow.webContents.send(
-                                            IPC_EVENTS.TWITCH_AUTH_SUCCESS,
-                                            {
-                                                displayName: authData.display_name,
-                                                profilePicture: authData.profile_image_url,
-                                            }
-                                        );
+                                        // Execute JavaScript in the renderer to navigate to home
+                                        mainWindow.webContents.executeJavaScript(`
+                                            window.location.href = '/';
+                                        `);
                                     }
                                 }
                             }
@@ -219,33 +216,34 @@ export class AuthHandler {
         );
 
         // Get current authentication status
-        ipcMain.handle(IPC_EVENTS.TWITCH_AUTH_GET, async (_event, twitchId: string) => {
+        ipcMain.handle(IPC_EVENTS.TWITCH_AUTH_GET, async () => {
             try {
-                const user = await this.db.getUserByTwitchId(twitchId);
-                return { success: true, user };
+                const user = await this.db.getFirstUser();
+                return { success: true, user, authenticated: !!user };
             } catch (error) {
                 return {
                     success: false,
+                    authenticated: false,
                     error: error instanceof Error ? error.message : "Failed to get user",
                 };
             }
         });
 
         // Check if user is authenticated (lighter version)
-        ipcMain.handle(IPC_EVENTS.TWITCH_AUTH_CHECK, async (_event, twitchId: string) => {
+        ipcMain.handle(IPC_EVENTS.TWITCH_AUTH_CHECK, async () => {
             try {
-                const user = await this.db.getUserByTwitchId(twitchId);
-                return { authenticated: !!user };
+                const user = await this.db.getFirstUser();
+                return { authenticated: !!user && !!user.accessToken };
             } catch (error) {
                 return { authenticated: false };
             }
         });
 
         // Logout
-        ipcMain.handle(IPC_EVENTS.TWITCH_AUTH_LOGOUT, async (_event, twitchId: string) => {
+        ipcMain.handle(IPC_EVENTS.TWITCH_AUTH_LOGOUT, async () => {
             try {
                 // Get existing user data first
-                const existingUser = await this.db.getUserByTwitchId(twitchId);
+                const existingUser = await this.db.getFirstUser();
                 if (!existingUser) {
                     return {
                         success: false,

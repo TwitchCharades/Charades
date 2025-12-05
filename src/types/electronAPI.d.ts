@@ -20,6 +20,7 @@ declare global {
             auth: {
                 init: () => Promise<{ success: boolean; error?: string }>;
                 get: () => Promise<{
+                    success: any;
                     authenticated: boolean;
                     user?: any;
                     expired?: boolean;
@@ -27,6 +28,10 @@ declare global {
                 }>;
                 check: () => Promise<{ authenticated: boolean }>;
                 logout: () => Promise<{ success: boolean; error?: string }>;
+                onAuthSuccess: (
+                    callback: (data: { displayName: string; profilePicture: string }) => void
+                ) => void;
+                removeAuthSuccessListener: () => void;
             };
         };
         ipcRenderer: {

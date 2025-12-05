@@ -7,7 +7,7 @@ import {
     Locked1Duotone,
     TwitchOutlined,
 } from "@lineiconshq/free-icons";
-import { useEffect, useState } from "react";
+import { useAuth } from "../../hooks/useAuth";
 
 const navItems = [
     { href: PATHS.home, label: "Home", initial: Home2Outlined },
@@ -15,27 +15,7 @@ const navItems = [
 ];
 
 const Sidebar = () => {
-    const [user, setUser] = useState<any>(null);
-    const [loading, setLoading] = useState<boolean>(true);
-
-    const loadUserData = async () => {
-        try {
-            if (window.electronAPI?.auth) {
-                const result = await window.electronAPI.auth.get();
-                if (result.authenticated && result.user) {
-                    setUser(result.user);
-                }
-            }
-        } catch (error) {
-            console.error("Failed to load user data:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        loadUserData();
-    }, []);
+    const { user, isAuthenticated, isLoading, error, refetch } = useAuth();
 
     return (
         <aside
@@ -142,7 +122,7 @@ const Sidebar = () => {
                             src={
                                 user?.profilePicture || "https://www.gravatar.com/avatar/?d=mp&s=64"
                             }
-                            alt={user?.username || "User Avatar"}
+                            alt={user?.displayName || "User Avatar"}
                             className="w-full h-full rounded-full object-cover"
                         />
                     </NavLink>

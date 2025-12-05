@@ -39,6 +39,14 @@ contextBridge.exposeInMainWorld("electronAPI", {
             ipcRenderer.invoke(IPC_EVENTS.TWITCH_AUTH_CHECK),
         logout: (): Promise<{ success: boolean; error?: string }> =>
             ipcRenderer.invoke(IPC_EVENTS.TWITCH_AUTH_LOGOUT),
+        onAuthSuccess: (
+            callback: (data: { displayName: string; profilePicture: string }) => void
+        ) => {
+            ipcRenderer.on(IPC_EVENTS.TWITCH_AUTH_SUCCESS, (_event, data) => callback(data));
+        },
+        removeAuthSuccessListener: () => {
+            ipcRenderer.removeAllListeners(IPC_EVENTS.TWITCH_AUTH_SUCCESS);
+        },
     },
 });
 
