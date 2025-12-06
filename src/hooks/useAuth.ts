@@ -21,6 +21,7 @@ interface UseAuthReturn {
     isLoading: boolean;
     error: string | null;
     refetch: () => Promise<void>;
+    logout: () => Promise<void>;
 }
 
 export const useAuth = (): UseAuthReturn => {
@@ -60,6 +61,32 @@ export const useAuth = (): UseAuthReturn => {
         }
     };
 
+    const logout = async () => {
+        setIsLoading(true);
+        setError(null);
+        try {
+            if (window.electronAPI?.auth) {
+                const result = await window.electronAPI.auth.logout();
+                if (result.success) {
+                    setUser(null);
+                    setIsAuthenticated(false);
+                } else {
+                    if (result.error) {
+                        setError(result.error);
+                    }
+                }
+            } else {
+                setError("Authentication API not available");
+            }
+        } catch (err) {
+            console.error("Logout failed:", err);
+            setError(err instanceof Error ? err.message : "Logout failed");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+
     useEffect(() => {
         fetchUser();
     }, []);
@@ -70,5 +97,6 @@ export const useAuth = (): UseAuthReturn => {
         isLoading,
         error,
         refetch: fetchUser,
+        logout,
     };
 };

@@ -1,4 +1,12 @@
+import { useAuth } from "../../hooks/useAuth";
+
 const HomePage = () => {
-    return <div>Welcome to the Home Page!</div>;
+    const { user } = useAuth();
+
+    return (
+        <div>
+            <button onClick={() => console.log(user)}>Log Auth</button>
+        </div>
+    );
 };
 export default HomePage;

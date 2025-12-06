@@ -1,0 +1,62 @@
+/* ========================= */
+/* SUCCESS — #43e97b         */
+/* ========================= */
+.toast-success .Toastify__toast-icon svg {
+  fill: #43e97b;
+}
+
+.toast-progress-success {
+  background: #43e97b !important; /* progress bar */
+}
+
+.toast-success .Toastify__progress-bar--bg {
+  background: rgba(67, 233, 123, 0.25) !important; /* track */
+}
+
+
+/* ========================= */
+/* ERROR — #fa709a           */
+/* ========================= */
+.toast-error .Toastify__toast-icon svg {
+  fill: #fa709a;
+}
+
+.toast-progress-error {
+  background: #fa709a !important;
+}
+
+.toast-error .Toastify__progress-bar--bg {
+  background: rgba(250, 112, 154, 0.25) !important;
+}
+
+
+/* ========================= */
+/* INFO — #30cfd0            */
+/* ========================= */
+.toast-info .Toastify__toast-icon svg {
+  fill: #30cfd0;
+}
+
+.toast-progress-info {
+  background: #30cfd0 !important;
+}
+
+.toast-info .Toastify__progress-bar--bg {
+  background: rgba(48, 207, 208, 0.25) !important;
+}
+
+
+/* ========================= */
+/* WARNING — #fee140         */
+/* ========================= */
+.toast-warning .Toastify__toast-icon svg {
+  fill: #fee140;
+}
+
+.toast-progress-warning {
+  background: #fee140 !important;
+}
+
+.toast-warning .Toastify__progress-bar--bg {
+  background: rgba(254, 225, 64, 0.25) !important;
+}

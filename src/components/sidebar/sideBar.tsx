@@ -3,6 +3,7 @@ import { PATHS } from "../../routes/paths";
 import { Lineicons } from "@lineiconshq/react-lineicons";
 import {
     Home2Outlined,
+    GamePadModern1Outlined,
     Gear1Duotone,
     Locked1Duotone,
     TwitchOutlined,
@@ -10,7 +11,7 @@ import {
 import { useAuth } from "../../hooks/useAuth";
 
 const navItems = [
-    { href: PATHS.home, label: "Home", initial: Home2Outlined },
+    { href: PATHS.home, label: "Home", initial: GamePadModern1Outlined },
     { href: PATHS.settings, label: "Settings", initial: Gear1Duotone },
 ];
 

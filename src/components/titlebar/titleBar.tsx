@@ -130,7 +130,7 @@ const TitleBar = ({ title, icon }: TitleBarProps) => {
 
     return (
         <div
-            className="flex items-center justify-between h-8 px-2 bg-[#202225] text-[11px] text-gray-300 select-none"
+            className="flex items-center justify-between h-8 px-2 bg-[#202225] text-[11px] text-gray-300 select-none z-50"
             style={{ WebkitAppRegion: "drag" } as React.CSSProperties}
         >
             {/* Left side: app icon + name */}

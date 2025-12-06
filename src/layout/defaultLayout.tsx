@@ -1,6 +1,7 @@
 import { Outlet } from "react-router";
 import { TitleBar } from "../components/titlebar";
 import { SideBar } from "../components/sidebar";
+import { ToasterContainer } from "../components/toaster";
 
 export interface DefaultLayoutProps {
     title?: string;
@@ -22,6 +23,7 @@ const DefaultLayout = ({ title, icon }: DefaultLayoutProps) => {
                         </div>
                     </div>
                 </div>
+                <ToasterContainer />
             </div>
         </>
     );
