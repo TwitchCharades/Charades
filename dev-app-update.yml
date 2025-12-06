@@ -1,4 +1,3 @@
 owner: TwitchCharades
 repo: Charades
 provider: github
-token: ${GH_TOKEN}

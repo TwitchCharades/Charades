@@ -35,7 +35,5 @@
         provider: "github",
         owner: "TwitchCharades",
         repo: "Charades",
-        private: true,
-        token: "${GH_TOKEN}",
     },
 }

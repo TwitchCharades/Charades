@@ -1,25 +1,29 @@
-# React + TypeScript + Vite
+# Twitch Charades - Electron App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is the Electron desktop application for Twitch Charades, built with React, TypeScript, and Vite.
 
-Currently, two official plugins are available:
+## Repository Information
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Organization:** TwitchCharades
+- **Repository:** Charades
+- **Type:** Public
+- **GitHub:** https://github.com/TwitchCharades/Charades
 
 ## Auto-Updater Setup
 
 This application uses `electron-updater` to provide automatic updates from GitHub releases.
 
-### For Private Repositories
+### Configuration
 
-Since this repository is private, you need to set up a GitHub Personal Access Token:
+Since this is a public repository, no authentication token is required for users to download updates. However, you still need a GitHub token to **publish** releases.
+
+### For Developers - Publishing Releases
 
 1. **Create a GitHub Token:**
     - Go to https://github.com/settings/tokens
     - Click "Generate new token" → "Generate new token (classic)"
-    - Name it (e.g., "Electron Auto Updater")
-    - Select scope: `repo` (Full control of private repositories)
+    - Name it (e.g., "Electron Release Publisher")
+    - Select scope: `repo` (Full control of repositories)
     - Generate and copy the token
 
 2. **Set Environment Variable:**
@@ -32,9 +36,9 @@ Since this repository is private, you need to set up a GitHub Personal Access To
     export GH_TOKEN="your_github_token_here"
     ```
 
-3. **Run Development Server:**
+3. **Build and Publish:**
     ```bash
-    pnpm run dev
+    pnpm run build
     ```
 
 ### Configuration Files
